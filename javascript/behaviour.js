@@ -5,7 +5,13 @@ $(function() {
 		$.facebox("<iframe src='"+$t.attr('href')+"' frameborder='0' width='640' height='350'></iframe>");
 		return false;
 	});
-	
+
+	// remove any populated select options
+	if ($('#Form_CreateMessageForm_To option').size() != 1) {
+		 $('#Form_CreateMessageForm_To').find('option').remove();
+	}
+	// Hide the select box so that the fcbk complete actions can take affect
+
 	if($('#Form_CreateMessageForm_To').length) {
 		var url = $("body").metadata().url;
 		$("#Form_CreateMessageForm_To").fcbkcomplete({
@@ -15,20 +21,21 @@ $(function() {
 	        filter_hide: true,
 			firstselected: true,
 	        filter_selected: true,
-			maxitems: 10,
-	        newel: false        		
+			// Changed to 1 item so the user can only message one person at a time
+			maxitems: 1,
+	        newel: false
 		});
 	}
-	
+
 	$('a[rel=select_all]').live("click",function() {
 		$('#messages_table td.checkbox input').attr('checked', true).trigger('change');
 		return false;
-	});	
+	});
 
 	$('a[rel=select_read]').live("click",function() {
 		$('#messages_table tr.read td.checkbox input').attr('checked', true).trigger('change');
 		return false;
-	});	
+	});
 
 	$('a[rel=select_unread]').live("click",function() {
 		$('#messages_table tr.unread td.checkbox input').attr('checked', true).trigger('change');
@@ -39,11 +46,11 @@ $(function() {
 		$('#messages_table td.checkbox input').attr('checked', false).trigger('change');
 		return false;
 	});
-	
+
 	$('#messages_table td.delete a').click(function() {
 		$t = $(this);
 		$.post(
-			$t.attr('href'), 
+			$t.attr('href'),
 			function(data) {
 				if(data == "deleted") {
 					$t.parents('tr').fadeOut(function() {
@@ -54,16 +61,16 @@ $(function() {
 		);
 		return false;
 	});
-	
+
 	$('#Form_CreateMessageForm_action_doCancel').click(function() {
 		window.parent.jQuery.facebox.close();
 		return false;
-	});	
-	
+	});
+
 	$('input.required, textarea.required').livequery(function() {
 		$(this).closest('form').validate();
 	});
-	
+
 	$('#Form_CreateMessageForm').livequery(function() {
 		$(this).ajaxForm({
 			target : 'p.message',
@@ -71,13 +78,13 @@ $(function() {
 				if(!$('#Form_CreateMessageForm').valid())
 					return false;
 				return true;
-			},			
+			},
 			success : function(data) {
 				$('p.message').fadeIn();
 			}
 		});
 	});
-	
+
 	$('#Form_ReplyForm').livequery(function() {
 		$(this).ajaxForm({
 			target : '#messages_interface',
@@ -85,7 +92,7 @@ $(function() {
 				if(!$('#Form_ReplyForm').valid())
 					return false;
 				return true;
-			},			
+			},
 			success : function(data) {
 				if($('p.message').is(':visible')) {
 					setTimeout(function() {
@@ -94,7 +101,7 @@ $(function() {
 				}
 			}
 		});
-	});	
+	});
 
 	$('#Form_MessageForm').livequery(function() {
 		$(this).ajaxForm({
@@ -107,8 +114,8 @@ $(function() {
 				}
 			}
 		});
-	});	
-	
+	});
+
 	$('#show_control a, .message_actions a').live("click", function() {
 		$t = $(this);
 		$('#messages_interface').load($t.attr('href'));
@@ -128,7 +135,7 @@ $(function() {
 		return false;
 	});
 
-	
+
 	$('#messages_table td.checkbox :checkbox').live("change",function() {
 		if($('#messages_table td.checkbox :checked').length)
 			$('.message_actions button').removeClass('disabled').attr('disabled', false);
@@ -139,11 +146,11 @@ $(function() {
 	$('#messages_table td.checkbox :checkbox').live("click",function() {
 		$(this).trigger('change');
 	});
-	
+
 	$('#messages_table td.checkbox :checkbox').livequery(function() {
 		$(this).trigger('change');
 	});
-	
+
 	if($('#Form_MessagesSearchForm_MessagesSearch').length) {
 		var initial_search_val = $('#Form_MessagesSearchForm_MessagesSearch').val();
 		$('#Form_MessagesSearchForm_MessagesSearch').focus(function() {

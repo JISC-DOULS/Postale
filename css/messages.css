@@ -62,7 +62,7 @@ a.btn.disabled,
 .messages #Form_CreateMessageForm #Form_CreateMessageForm_action_doCancel:hover {background:#e5e5e5;}
 .messages #Body textarea {border:1px solid #999;}
 .messages #Form_MessageForm {width:100%;}
-.messages #Form_CreateMessageForm #To select {display:none;}
+/*.messages #Form_CreateMessageForm #To select {display:none;} */
 .messages #Form_CreateMessageForm .text input {width:100%;border:1px solid #999;padding:4px 2px;}
 .messages #Form_ReplyForm label {width:65px;text-align:right;padding-right:10px;margin:0;}
 .messages #Form_ReplyForm .middleColumn {clear:none;margin:0;padding:0;}
@@ -71,11 +71,11 @@ a.btn.disabled,
 #messages_search {width:160px;float:right;padding-top:4px;}
 #Form_MessagesSearchForm {width:160px;font-size:11px;color:#666;margin:0;padding:0;}
 #Form_MessagesSearchForm_MessagesSearch {display:block;float:left;border:1px solid #ccc;height:14px;display:block;width:128px;margin:0;color:#999;font-weight:normal;font-size:11px;-moz-border-radius: 5px 0 0 5px;-webkit-border-top-left-radius: 5px;-webkit-border-bottom-left-radius: 5px;padding:4px;}
-#Form_MessagesSearchForm_action_doSearch {font-size:1em;display:block;float:left;margin:0;padding:0;height:24px;width:22px;border:1px solid #ccc;border-width:1px 1px 1px 0;text-indent:-9999em;background:url(/postale/images/zoom.png) no-repeat center;-moz-border-radius: 0 5px 5px 0;-webkit-border-top-right-radius: 5px;-webkit-border-bottom-right-radius: 5px;}
+#Form_MessagesSearchForm_action_doSearch {font-size:1em;display:block;float:left;margin:0;padding:0;height:24px;width:22px;border:1px solid #ccc;border-width:1px 1px 1px 0;text-indent:-9999em;background:url(/buddy_message/images/zoom.png) no-repeat center;-moz-border-radius: 0 5px 5px 0;-webkit-border-top-right-radius: 5px;-webkit-border-bottom-right-radius: 5px;}
 #Form_MessagesSearchForm_MessagesSearch.focus {color:#666}
 
 label.error {display:block;width:auto !important;background:#fcdad6;padding:4px;margin-left:2px !important;}
 /* utilities */
-.clearfix {zoom: 1;display: block;} 
+.clearfix {zoom: 1;display: block;}
 .clearfix:after {content: ".";display: block;height: 0;clear: both;visibility: hidden;}
 .clearfix {display: inline-block;}

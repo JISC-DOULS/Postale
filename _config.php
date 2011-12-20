@@ -2,9 +2,9 @@
 
 $dir = basename(rtrim(dirname(__FILE__),'/'));
 // Check directory
-if($dir != "postale") {
+if($dir != "buddy_message") {
 	user_error(sprintf(
-		_t('Messages.WRONGDIRECTORY','The Postale module must be in a directory named "postale" (currently "%s")'),
+		_t('Messages.WRONGDIRECTORY','The Buddy Message module must be in a directory named "buddy_message" (currently "%s")'),
 		$dir
 	), E_USER_ERROR);
 }
@@ -12,7 +12,7 @@ if($dir != "postale") {
 
 // Check dependencies
 if(!class_exists("DataObjectManager")) {
-	user_error(_t('Messages.DATAOBJECTMANAGER','The Postale module requires DataObjectManager'),E_USER_ERROR);
+	user_error(_t('Messages.DATAOBJECTMANAGER','The Buddy Message module requires DataObjectManager'),E_USER_ERROR);
 }
 
 DataObject::add_extension('Member','MessagesMember');

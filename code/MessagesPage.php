@@ -12,23 +12,23 @@ class MessagesPage extends Page_Controller {
 	 * @var string The URL segment that will point to this controller
 	 */
 	public static $url_segment;
-	
+
 	/**
 	 * @var string The origin address of emails
 	 */
 	public static $from_address = null;
-	 
+
 	/**
 	  * @var string The from name (also appears in the closing line of emails)
 	  */
 	public static $from_name = null;
-	
+
 	/**
 	 * @var string A filter clause for the members search. For more advanced functionality,
 	 * use {@link getSearchableMembers()} in a decorator
 	 */
 	public static $members_filter = null;
-	
+
 	/**
 	 * @var string The field to use as a label for members in this module (e.g. "Nickname" or "FirstName")
 	 * This field can also be a custom getter.
@@ -39,18 +39,18 @@ class MessagesPage extends Page_Controller {
 	 * @var string A single field used to represent a member (e.g. "Nickname" or FirstName")
 	 */
 	public static $member_short_label_field = "FirstName";
-	
+
 	/**
 	 * @var int The number of messages per page
 	 */
 	public static $messages_per_page = 25;
-	
+
 	/**
 	 * @var int The length of a message body when summarized
 	 * (autocomplete search)
 	 */
 	public static $summary_length = 40;
-	
+
 	/**
 	 * @var array The allowed actions for this controller
 	 */
@@ -70,7 +70,7 @@ class MessagesPage extends Page_Controller {
 		'markread',
 		'markunread'
 	);
-	
+
 	/**
 	 * Set the url for this controller and register it with {@link Director}
 	 * @param string $url The URL to use
@@ -80,9 +80,9 @@ class MessagesPage extends Page_Controller {
 		self::$url_segment = $url;
 		Director::addRules($priority,array(
 			$url => 'MessagesPage'
-		));	
+		));
 	}
-	
+
 	/**
 	 * Returns a pre-loaded {@link SQLQuery} object with all of the necessary
 	 * joins and aliasing. This object is modified and enhanched by other methods
@@ -91,19 +91,19 @@ class MessagesPage extends Page_Controller {
 	 */
 	public static function get_messages_extended_query($filter = null) {
 		$query = Member::currentUser()->getManyManyComponentsQuery(
-			'Threads', 
+			'Threads',
 			$filter,
 			null,
 			"INNER JOIN `Message` ON `Message`.ThreadID = `Thread`.ID"
 		);
-		
+
 		// Save these fields as unique aliases so we don't call them twice {@see Thread::IsRead()}
 		$query->select[] = "`Member_Threads`.IsRead AS CacheIsRead";
 		$query->select[] = "`Member_Threads`.Deleted AS CacheDeleted";
 
 		$query->select[] = "MAX(`Message`.Created) AS LatestMessageDate";
 		$query->orderby("LatestMessageDate DESC");
-		return $query;	
+		return $query;
 	}
 
 	/**
@@ -120,9 +120,9 @@ class MessagesPage extends Page_Controller {
 		$result = singleton("Thread")->buildDataObjectSet($query->execute(), 'DataObjectSet', $query, 'Thread');
 		if($result)
 			$result->parseQueryLimit($query);
-		return $result;	
+		return $result;
 	}
-	
+
 	/**
 	 * Gets all the undeleted messages
 	 * @return DataObjectSet
@@ -130,7 +130,7 @@ class MessagesPage extends Page_Controller {
 	public static function get_all_messages() {
 		return self::get_messages_extended("`Deleted` != 1");
 	}
-	
+
 	/**
 	 * Get all of the undeleted, unread messages
 	 * @return DataObjectSet
@@ -138,7 +138,7 @@ class MessagesPage extends Page_Controller {
 	public static function get_unread_messages() {
 		return self::get_messages_extended("`Deleted` != 1 AND `IsRead` != 1");
 	}
-	
+
 	/**
 	 * Get all of the messages based on the current filter (stored in {@link Session})
 	 * @return DataObjectSet
@@ -148,7 +148,7 @@ class MessagesPage extends Page_Controller {
 			return self::get_unread_messages();
 		return self::get_all_messages();
 	}
-	
+
 	/**
 	 * Updates a set of {@link Thread} objects based on posted data.
 	 * Returns the total number updated.
@@ -173,9 +173,9 @@ class MessagesPage extends Page_Controller {
 			}
 			return sizeof($data['marked']);
 		}
-		return false;		
+		return false;
 	}
-	
+
 	/**
 	 * Get a query to search the fields of Thread, Message, and Member objects
 	 * @param string $keywords The keywords to search for
@@ -199,10 +199,13 @@ class MessagesPage extends Page_Controller {
 		$query->where[] = $where;
 		return $query;
 	}
-	
-	
+
+
 	/**
 	 * Initialize the controller and include dependencies
+	 *
+	 * N.B Multiple changes to cover the change in directory name from postale to buddy_message
+	 * (Adam Lewis 2011-11-30)
 	 */
 	public function init() {
 		parent::init();
@@ -212,17 +215,17 @@ class MessagesPage extends Page_Controller {
 		Requirements::javascript(THIRDPARTY_DIR.'/jquery-livequery/jquery.livequery.js');
 		Requirements::javascript(THIRDPARTY_DIR.'/jquery-metadata/jquery.metadata.js');
 		Requirements::javascript('dataobject_manager/javascript/facebox.js');
-		Requirements::javascript('postale/javascript/validation.js');
-		Requirements::javascript('postale/javascript/validation_improvements.js');		
+		Requirements::javascript('buddy_message/javascript/validation.js');
+		Requirements::javascript('buddy_message/javascript/validation_improvements.js');
 		Requirements::css('dataobject_manager/css/facebox.css');
-		Requirements::javascript('postale/javascript/jquery.fcbkcomplete.js');
-		Requirements::javascript('postale/javascript/jquery.form.js');
-		Requirements::javascript('postale/javascript/jquery.scrollTo.js');
-		Requirements::css('postale/css/jquery.fcbkcomplete.css');
-		Requirements::javascript('postale/javascript/behaviour.js');
+		Requirements::javascript('buddy_message/javascript/jquery.fcbkcomplete.js');
+		Requirements::javascript('buddy_message/javascript/jquery.form.js');
+		Requirements::javascript('buddy_message/javascript/jquery.scrollTo.js');
+		Requirements::css('buddy_message/css/jquery.fcbkcomplete.css');
+		Requirements::javascript('buddy_message/javascript/behaviour.js');
 		Requirements::themedCSS('messages');
 	}
-	
+
 	/**
 	 * The action that will show a the detail (messages) in a {@link Thread}
 	 * @return SSViewer
@@ -235,11 +238,11 @@ class MessagesPage extends Page_Controller {
 			return array();
 		}
 		if(!Director::is_ajax())
-			return Director::redirectBack();	
+			return Director::redirectBack();
 	}
-	
+
 	/**
-	 * This method is called when a user clicks the "delete" button in the 
+	 * This method is called when a user clicks the "delete" button in the
 	 * main Messages page. For the detail view delete, see {@link markdeleted()}
 	 * @return SSViewer
 	 */
@@ -250,8 +253,8 @@ class MessagesPage extends Page_Controller {
 			return new SS_HTTPResponse('deleted',200);
 		return Director::redirectBack();
 	}
-	
-	/** 
+
+	/**
 	 * The default action sets the filter to "all" messages
 	 * @return SSViewer
 	 */
@@ -262,20 +265,20 @@ class MessagesPage extends Page_Controller {
 			return $this->renderWith('MessagesInterface');
 		return array();
 	}
-	
+
 	/**
 	 * This action shows all of the unread messages, and updates
 	 * the session variable
 	 * @return SSViewer
 	 */
-	public function unread() {		
+	public function unread() {
 		Session::set('MessagesFilter','unread');
 		$this->UnreadLink = "current";
 		if(Director::is_ajax())
 			return $this->renderWith('MessagesInterface');
 		return array();
 	}
-	
+
 	/**
 	 * This action feeds the search box in the messages interface.
 	 * Searches on several fields in {@link Thread}, {@link Message} and {@link Member}
@@ -284,11 +287,11 @@ class MessagesPage extends Page_Controller {
 	public function autocompletesearch() {
 		if(isset($_REQUEST['q']) && !empty($_REQUEST['q'])) {
 			$query = self::get_search_query($_REQUEST['q']);
-			$result = singleton("Message")->buildDataObjectSet($query->execute(), 'DataObjectSet', $query, 'Message');	
+			$result = singleton("Message")->buildDataObjectSet($query->execute(), 'DataObjectSet', $query, 'Message');
 			return AutoCompleteField::render($result);
 		}
 	}
-	
+
 	/**
 	 * Used by the detail view to mark the given {@link Thread} read
 	 * @return SSViewer
@@ -301,7 +304,7 @@ class MessagesPage extends Page_Controller {
 			return Director::redirectBack();
 		}
 	}
-	
+
 	/**
 	 * Used by the detail view to mark the given {@link Thread} read
 	 * @return SSViewer
@@ -312,9 +315,9 @@ class MessagesPage extends Page_Controller {
 			if(Director::is_ajax())
 				return $this->renderWith('MessagesInterface');
 			return Director::redirectBack();
-		}	
+		}
 	}
-	
+
 	/**
 	 * Used by the detail view to mark the given {@link Thread} deleted
 	 * @return SSViewer
@@ -325,35 +328,64 @@ class MessagesPage extends Page_Controller {
 			if(Director::is_ajax())
 				return $this->renderWith('MessagesInterface');
 			return Director::redirectBack();
-		}	
+		}
+	}
+
+	/**
+	 * Get Searchable Members
+	 *
+	 * A method used to restrict the user so that they can only message their own buddies.  See
+	 * method "autocompleterecipients()"
+	 *
+	 * @access	public
+	 * @author	Adam Lewis		<adam.lewis@open.ac.uk>
+	 * @since	2011-11-30
+	 * @return DataObjectSet
+	 */
+	public function getSearchableMembers()
+	{
+		return Buddy::getMemberBuddies(Member::currentUserID());
 	}
 
 	/**
 	 * This action feeds the automatic population of the "To" field in the
 	 * create message view
+	 *
+	 * N.B Removed unnecessary code which allowed the user to send messages to themselves
+	 * (Adam Lewis 2011-11-30)
+	 *
 	 * @todo: Update to make more modular
 	 * @return JSON
 	 */
 	public function autocompleterecipients() {
+
 		if(isset($_REQUEST['tag']) && !empty($_REQUEST['tag'])) {
-			if($this->hasMethod('getSearchableMembers'))
+			if($this->hasMethod('getSearchableMembers')) {
 				$result = $this->getSearchableMembers();
-			else
+
+			} else {
 				$result = DataObject::get("Member", self::$members_filter);
+			}
 			if($result) {
 				$ret = array();
-				foreach($result as $member) {
-					$ret[] = array (
-						'caption' => $member->FullLabel(),
-						'value' => $member->ID
-					);
+				foreach($result as $buddy) {
+					// If the buddyID is the same as the current user, then get the
+					// initiatorID instead
+					$id = ($buddy->BuddyID == Member::currentUserID()) ? $buddy->InitiatorID
+						: $buddy->BuddyID;
+					if ($member = DataObject::get_by_id("Member", Convert::raw2sql($id))) {
+						$ret[] = array (
+							'caption' => $member->getName(),
+							'value' => $member->ID
+						);
+					}
 				}
 				return Convert::array2json($ret);
 			}
-				
+
 		}
 	}
-	
+
 	/**
 	 * Provide a link to this controller
 	 * @param string $action The action of the controller
@@ -363,7 +395,7 @@ class MessagesPage extends Page_Controller {
 	public function Link($action = null, $id = null) {
 		return Controller::join_links(self::$url_segment, $action, $id);
 	}
-	
+
 	/**
 	 * Returns a set of {@link Thread} objects based on the current filter
 	 * @return DataObjectSet
@@ -371,11 +403,11 @@ class MessagesPage extends Page_Controller {
 	public function Messages() {
 		return self::get_messages_filtered();
 	}
-	
+
 	/**
 	 * Present the main interface as a form to support actions for threads that are checked off
 	 * @return Form
-	 */	
+	 */
 	public function MessageForm() {
 		$f = new Form(
 			$this,
@@ -384,7 +416,7 @@ class MessagesPage extends Page_Controller {
 			new FieldSet(
 				$a = new FormAction('doMarkRead',_t('Postale.MARKASREAD','Mark as read')),
 				$b = new FormAction('doMarkUnread',_t('Postale.MARKASUNREAD','Mark as unread')),
-				$c = new FormAction('doDelete',_t('Postale.DELETE','Delete'))			
+				$c = new FormAction('doDelete',_t('Postale.DELETE','Delete'))
 			)
 		);
 		$a->useButtonTag = true;
@@ -393,7 +425,7 @@ class MessagesPage extends Page_Controller {
 		$f->disableSecurityToken();
 		return $f;
 	}
-	
+
 	/**
 	 * Link to all messages (index action will set the Session var)
 	 * @return string
@@ -401,7 +433,7 @@ class MessagesPage extends Page_Controller {
 	public function AllMessagesLink() {
 		return $this->Link();
 	}
-	
+
 	/**
 	 * Link to the unread messages
 	 * @return string
@@ -409,7 +441,7 @@ class MessagesPage extends Page_Controller {
 	public function UnreadMessagesLink() {
 		return $this->Link('unread');
 	}
-	
+
 	/**
 	 * Link to add a new message (popup window)
 	 * @return string
@@ -417,7 +449,7 @@ class MessagesPage extends Page_Controller {
 	public function NewMessageLink() {
 		return $this->Link('add');
 	}
-	
+
 	/**
 	 * This links back to the index action. Just a placeholder in case it ever changes.
 	 * @return string
@@ -425,8 +457,8 @@ class MessagesPage extends Page_Controller {
 	public function BackToMessagesLink() {
 		return $this->Link();
 	}
-	
-	
+
+
 	/**
 	 * This template accessor will get the current thread and check if the user
 	 * can view it. Because the IDs in the URL are always for {@link Thread} objects,
@@ -438,25 +470,45 @@ class MessagesPage extends Page_Controller {
 			return $thread;
 		return false;
 	}
-	
+
 	/**
 	 * Return the form used to create a message (appears in a popup)
+	 *
+	 * N.B Altered the functionality to allow the user to only message one person at a time and
+	 * restrict them to only be able to message their own buddies
+	 *
 	 * @return form
 	 */
-	public function CreateMessageForm() {
+	public function CreateMessageForm()
+	{
 		$map = array();
-		if(isset($_REQUEST['to'])) {
+		if(isset($_REQUEST['to']) && $_REQUEST['to'] != '')
+		{
 			$to = $_REQUEST['to'];
 			if(!is_array($to))
+			{
 				$to = array($_REQUEST['to']);
-			
-			foreach($to as $id) {
-				if($member = DataObject::get_by_id("Member", Convert::raw2sql($id))) {
+			}
+			foreach($to as $id)
+			{
+				if($member = DataObject::get_by_id("Member", Convert::raw2sql($id)))
+				{
 					$map[$member->ID] = $member->getName();
 				}
 			}
 		}
-
+		if (empty($map))
+		{
+			$map[''] = 'Please select...';
+			// Get only the "buddies" for this user
+			$buddies = Buddy::getMemberBuddies(Member::currentUserID());
+			foreach ($buddies as $buddy) {
+				if($member = DataObject::get_by_id("Member", Convert::raw2sql($buddy->BuddyID)))
+				{
+					$map[$member->ID] = $member->getName();
+				}
+			}
+		}
 		return new Form(
 			$this,
 			"CreateMessageForm",
@@ -472,7 +524,7 @@ class MessagesPage extends Page_Controller {
 			new MessagesValidator("To","Subject","Body")
 		);
 	}
-	
+
 	/**
 	 * Return the form used to reply to a thread
 	 * @return Form
@@ -495,7 +547,7 @@ class MessagesPage extends Page_Controller {
 		}
 		return false;
 	}
-		
+
 	/**
 	 * Returns the form used to search messages
 	 * @return Form
@@ -505,7 +557,7 @@ class MessagesPage extends Page_Controller {
 			$field = new AutoCompleteField('MessagesSearch','','autocompletesearch',_t('Postale.SEARCHMESSAGES','Search messages...'));
 		else
 			$field = new Textfield('MessagesSearch','',_t('Postale.SEARCHMESSAGES','Search messages...'));
-			
+
 		$f = new Form(
 			$this,
 			"MessagesSearchForm",
@@ -519,7 +571,7 @@ class MessagesPage extends Page_Controller {
 		$f->disableSecurityToken();
 		return $f;
 	}
-		
+
 	/**
 	 * Handle the action for marking a set of messages as read.
 	 * @param array $data The form data that was passed (i.e a set of {@link Thread} IDs)
@@ -534,7 +586,7 @@ class MessagesPage extends Page_Controller {
 				return $this->renderWith('MessagesInterface');
 		return Director::redirectBack();
 	}
-	
+
 	/**
 	 * Handle the action for marking a set of messages as unread.
 	 * @param array $data The form data that was passed (i.e a set of {@link Thread} IDs)
@@ -555,14 +607,14 @@ class MessagesPage extends Page_Controller {
 	 * @param array $data The form data that was passed (i.e a set of {@link Thread} IDs)
 	 * @param Form $form The form that was used
 	 * @return SSViewer
-	 */	
+	 */
 	public function doDelete($data, $form) {
 		if($num = self::bulk_update($data, 'Deleted', true))
 			$msg = sprintf(_t('MESSAGESMARKEDDELETED','%d message(s) deleted'),$num);
 			$form->sessionMessage($msg,'good');
 			if(Director::is_ajax())
 				return $this->renderWith('MessagesInterface');
-		return Director::redirectBack();	
+		return Director::redirectBack();
 	}
 
 	/**
@@ -570,7 +622,7 @@ class MessagesPage extends Page_Controller {
 	 * @param array $data The form data that was passed
 	 * @param Form $form The form that was used
 	 * @return SSViewer
-	 */	
+	 */
 	public function doReply($data, $form) {
 		if($thread = $this->Thread()) {
 			$message = new Message();
@@ -589,7 +641,7 @@ class MessagesPage extends Page_Controller {
 	 * @param array $data The form data that was passed
 	 * @param Form $form The form that was used
 	 * @return SS_HTTPResponse
-	 */		
+	 */
 	public function doCreate($data, $form) {
 		if(is_array($data['To'])) {
 			// Create the thread
@@ -603,7 +655,7 @@ class MessagesPage extends Page_Controller {
 			}
 			// Add the author, as well.
 			Member::currentUser()->Threads()->add($thread);
-			
+
 			// Create the message
 			$message = new Message();
 			$message->Body = $data['Body'];
@@ -618,9 +670,9 @@ class MessagesPage extends Page_Controller {
 				return new SS_HTTPResponse($msg, 200);
 			$form->sessionMessage($msg,'good');
 		}
-		return Director::redirectBack();		
+		return Director::redirectBack();
 	}
-	
+
 	/**
 	 * Execute the search for messages
 	 * @param $data The form data that was posted
@@ -629,13 +681,13 @@ class MessagesPage extends Page_Controller {
 	 */
 	public function doSearch($data, $form) {
 		$query = self::get_search_query($data['MessagesSearch']);
-		$result = singleton("Message")->buildDataObjectSet($query->execute(), 'DataObjectSet', $query, 'Message');	
+		$result = singleton("Message")->buildDataObjectSet($query->execute(), 'DataObjectSet', $query, 'Message');
 		return $this->customise(array(
 			'MessageSearchResults' => $result,
 			'Query' => $data['MessagesSearch']
 		))->renderWith(array('MessagesPage_results','Page'));
 	}
-	
+
 	/**
 	 * Gets an ID "cleanly". Checks the URL first, then the request. Very handy
 	 * for forms that edit objects
@@ -659,7 +711,7 @@ class MessagesPage extends Page_Controller {
 			return $_REQUEST['ID'];
 		return false;
 	}
-	
+
 	/**
 	 * Uses {@link cleanID()} to capture the ID and get a record from the database
 	 * @param string $className The name of the object to fetch

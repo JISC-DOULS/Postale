@@ -10,14 +10,14 @@
 					<% if Messages.NotFirstPage %>
 						<a class="btn" href="$Messages.PrevLink" title="<% _t('Postale.VIEWPREV','View the previous page') %>">&laquo;</a>
 					<% else %>
-						<a class="btn disabled" href="javascript:void(0);" title="<% _t('Postale.VIEWPREV','View the previous page') %>">&laquo;</a>								
+						<a class="btn disabled" href="javascript:void(0);" title="<% _t('Postale.VIEWPREV','View the previous page') %>">&laquo;</a>
 					<% end_if %>
 					<% if Messages.NotLastPage %>
 						<a class="btn" href="$Messages.NextLink" title="<% _t('Postale.VIEWNEXT','View the next page') %>">&raquo;</a>
 					<% else %>
-						<a class="btn disabled" href="javascript:void(0);" title="<% _t('Postale.VIEWNEXT','View the next page') %>">&raquo;</a>								
+						<a class="btn disabled" href="javascript:void(0);" title="<% _t('Postale.VIEWNEXT','View the next page') %>">&raquo;</a>
 					<% end_if %>
-				</div>		
+				</div>
 			</div>
 		<div id="controls_wrap" class="clearfix">
 			<div id="select_control"><% _t('Postale.SELECT','Select') %>: <a rel="select_all" href="javascript:void(0)"><% _t('Postale.ALL','All') %></a> | <a rel="select_read" href="javascript:void(0)"><% _t('Postale.READ','Read') %></a> | <a rel="select_unread" href="javascript:void(0)"><% _t('Postale.UNREAD','Unread') %></a> | <a rel="select_none" href="javascript:void(0)"><% _t('Postale.NONE','None') %></a></div>

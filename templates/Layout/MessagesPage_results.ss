@@ -9,7 +9,7 @@
 				<% include MessagesSearch %>
 			</div>
 		</div>
-		<div id="messages_results">			
+		<div id="messages_results">
 			<div id="message_actions">
 				<a class="btn" href="$BackToMessagesLink">&laquo; <% _t('Postale.BACKTOMESSAGES','Back to messages') %></a>
 			</div>
@@ -18,22 +18,22 @@
 					<div class="message_wrap clearfix" id="message{$ID}">
 						<div class="message_side">
 							 <% control Author %>
-							 	<% if Author.Link %>
-							 		<a href="$Author.Link">$AvatarOrDefault</a>
-							 	<% else %>
-							 		$AvatarOrDefault
-							 	<% end_if %>
-							 <% end_control %>
+								<% if Author.Link %>
+									<a href="$Author.Link">$AvatarOrDefault</a>
+								<% else %>
+									$AvatarOrDefault
+								<% end_if %>
+							<% end_control %>
 						 </div>
 						 <div class="message_main">
-					 	 	<h4>
-					 	 		<% if Author.Link %>
-						 	 		<a href="$Author.Link">$Author.ShortLabel</a>
-						 	 	<% else %>
-						 	 		$Author.ShortLabel
-						 	 	<% end_if %> 
-						 	 	<span>$Created.Nice</span>
-						 	</h4>
+							<h4>
+								<% if Author.Link %>
+									<a href="$Author.Link">$Author.ShortLabel</a>
+								<% else %>
+									$Author.ShortLabel
+								<% end_if %>
+								<span>$Created.Nice</span>
+							</h4>
 							<div>$Summary</div>
 							<div><a href="$Link"><% _t('Postale.READMORE','more...') %></a></div>
 						 </div>
