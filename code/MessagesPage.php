@@ -197,6 +197,8 @@ class MessagesPage extends Page_Controller {
 			$filters[] = "`Member`.{$field} LIKE '%{$search}%'";
 		$where = implode(' OR ', $filters);
 		$query->where[] = $where;
+		//Extra sub query that checks if current user has deleted thread
+		$query->where[] = "(SELECT `Member_Threads`.Deleted from `Member_Threads` where `Member_Threads`.ThreadID = `Thread`.ID AND `Member_Threads`.MemberID = ".Member::currentUserID().") = 0";
 		return $query;
 	}
 
@@ -493,13 +495,16 @@ class MessagesPage extends Page_Controller {
 			{
 				if($member = DataObject::get_by_id("Member", Convert::raw2sql($id)))
 				{
-					$map[$member->ID] = $member->getName();
+				    //Altered to support only 1 buddy - Jason Platts
+					if (empty($map) && Buddy::getAreBuddies(Member::currentUserID(), Convert::raw2sql($id))) {
+					    $map[$member->ID] = $member->getName();
+					}
 				}
 			}
 		}
 		if (empty($map))
 		{
-			$map[''] = 'Please select...';
+			$map[''] = _t('Postale.ToSelect', 'Please select...');
 			// Get only the "buddies" for this user
 			$buddies = Buddy::getMemberBuddies(Member::currentUserID());
 			foreach ($buddies as $buddy) {
@@ -638,6 +643,7 @@ class MessagesPage extends Page_Controller {
 
 	/**
 	 * Handle the action for creating a {@link Thread}
+	 * UPDATED TO CHECK RECIPIENT IS BUDY
 	 * @param array $data The form data that was passed
 	 * @param Form $form The form that was used
 	 * @return SS_HTTPResponse
@@ -649,9 +655,12 @@ class MessagesPage extends Page_Controller {
 			$thread->Subject = $data['Subject'];
 			$thread->write();
 			foreach($data['To'] as $id) {
-				if($member = DataObject::get_by_id("Member", Convert::raw2sql($id)))
-					// associate this thread with all the recipients in "To"
-					$member->Threads()->add($thread);
+				if($member = DataObject::get_by_id("Member", Convert::raw2sql($id))) {
+				    if (Buddy::getAreBuddies(Member::currentUserID(), Convert::raw2sql($id))) {
+				        // associate this thread with all the recipients in "To"
+					    $member->Threads()->add($thread);
+				    }
+				}
 			}
 			// Add the author, as well.
 			Member::currentUser()->Threads()->add($thread);
@@ -680,6 +689,10 @@ class MessagesPage extends Page_Controller {
 	 * @return SSViewer
 	 */
 	public function doSearch($data, $form) {
+	    if (!isset($data['MessagesSearch'])) {
+	        //Fix to stop error when accessing search directly
+	        $data['MessagesSearch'] = "";
+	    }
 		$query = self::get_search_query($data['MessagesSearch']);
 		$result = singleton("Message")->buildDataObjectSet($query->execute(), 'DataObjectSet', $query, 'Message');
 		return $this->customise(array(
