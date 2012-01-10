@@ -33,11 +33,13 @@ $(function() {
 	});
 
 	$('a[rel=select_read]').live("click",function() {
+	    $('#messages_table td.checkbox input').attr('checked', false).trigger('change');
 		$('#messages_table tr.read td.checkbox input').attr('checked', true).trigger('change');
 		return false;
 	});
 
 	$('a[rel=select_unread]').live("click",function() {
+	    $('#messages_table td.checkbox input').attr('checked', false).trigger('change');
 		$('#messages_table tr.unread td.checkbox input').attr('checked', true).trigger('change');
 		return false;
 	});
